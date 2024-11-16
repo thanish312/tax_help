@@ -1,23 +1,12 @@
-import os
-from ibm_watsonx_ai import GenerativeModel
-from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+import requests
 
-# Use environment variables for sensitive information
-WATSONX_API_KEY = os.getenv("WATSONX_API_KEY")
-WATSONX_SERVICE_URL = os.getenv("WATSONX_SERVICE_URL")
-
-# Check if the API key and service URL are set
-if not WATSONX_API_KEY or not WATSONX_SERVICE_URL:
-    raise ValueError("API key and service URL must be set in environment variables.")
-
-# Initialize Watsonx.ai client
-authenticator = IAMAuthenticator(WATSONX_API_KEY)
-watsonx_model = GenerativeModel(authenticator=authenticator)
-watsonx_model.set_service_url(WATSONX_SERVICE_URL)
+WATSON_ASSISTANT_API_KEY = "xyMJfE6RlMLIsq9cTQec4xMiakW78X4yn2xY2cPCQqgo"
+WATSON_ASSISTANT_URL = "https://api.eu-gb.assistant.watson.cloud.ibm.com/instances/d51040cc-d2e0-45bc-a079-42c76dfde5cb"
+WATSON_ASSISTANT_ID = "765aad8c-d43c-42cc-bb76-d9c9679edf5d"  # The Assistant ID for your Watson Assistant
 
 def generate_instructions(country, tax_form, transcripts):
     """
-    Generate a detailed guide for filling out tax forms using IBM Watsonx.ai.
+    Generate a detailed guide for filling out tax forms using IBM Watson Assistant v2.
     
     Args:
         country (str): The selected country.
@@ -27,13 +16,6 @@ def generate_instructions(country, tax_form, transcripts):
     Returns:
         str: Generated instructions or an error message.
     """
-    # Validate inputs
-    if not isinstance(country, str) or not isinstance(tax_form, str):
-        return "Country and tax form must be strings."
-    
-    if not isinstance(transcripts, list) or not all(isinstance(t, str) for t in transcripts):
-        return "Transcripts must be a list of strings."
-
     # Construct the prompt
     prompt = (
         f"Provide a detailed step-by-step guide for filling {tax_form} in {country}. "
@@ -41,26 +23,31 @@ def generate_instructions(country, tax_form, transcripts):
     )
     prompt += "\n\n".join(transcripts)
 
+    # API endpoint for Watson Assistant
+    url = f"{WATSON_ASSISTANT_URL}/v2/assistants/{WATSON_ASSISTANT_ID}/message"
+
+    # Headers for the request
+    headers = {
+        "Authorization": f"Bearer {WATSON_ASSISTANT_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    # Payload for the request
+    payload = {
+        "input": {
+            "message_type": "text",
+            "text": prompt,
+        },
+        "context": {},  # Add context if needed for Watson Assistant
+    }
+
     try:
-        # Generate response using Watsonx.ai
-        response = watsonx_model.generate_text(
-            model="gpt-3.5-turbo",  # Make sure this model is available
-            input=prompt,
-            temperature=0.7,
-            max_new_tokens=2000
-        )
-        return response["generated_text"]
-    except Exception as e:
-        return f"Failed to generate instructions: {str(e)}"
+        # Make the API request
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()  # Raise an exception for HTTP errors
 
-# Example usage
-if __name__ == "__main__":
-    country = "United States"
-    tax_form = "1040"
-    transcripts = [
-        "In this video, we discuss the importance of gathering all necessary documents.",
-        "Make sure to check your income sources before filling out the form."
-    ]
-
-    instructions = generate_instructions(country, tax_form, transcripts)
-    print(instructions)
+        # Parse the response
+        output = response.json()
+        return output.get("output", {}).get("generic", [{}])[0].get("text", "No response.")
+    except requests.exceptions.RequestException as e:
+        return f"Failed to generate instructions: {e}"
