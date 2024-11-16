@@ -1,4 +1,5 @@
 streamlit
 requests
-youtube-dl
+yt-dlp
 google-cloud-speech
+ibm_watsonx_ai
