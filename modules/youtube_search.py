@@ -1,6 +1,6 @@
 import requests
 import os
-API_KEY = os.getenv('yt')
+API_KEY = os.getenv("yt")
 
 def search_youtube(country, tax_form):
     query = f"How to fill {tax_form} for {country}"
