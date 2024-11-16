@@ -3,7 +3,7 @@ import os
 import base64
 import requests
 
-GOOGLE_API_KEY = os.getenv('stt')
+GOOGLE_API_KEY = os.getenv("stt")
 
 def transcribe_video(video_url):
     audio_file = "temp_audio.wav"
