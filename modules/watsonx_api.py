@@ -1,8 +1,8 @@
 import requests
 
-WATSON_ASSISTANT_API_KEY = "xyMJfE6RlMLIsq9cTQec4xMiakW78X4yn2xY2cPCQqgo"
-WATSON_ASSISTANT_URL = "https://api.eu-gb.assistant.watson.cloud.ibm.com/instances/d51040cc-d2e0-45bc-a079-42c76dfde5cb"
-WATSON_ASSISTANT_ID = "765aad8c-d43c-42cc-bb76-d9c9679edf5d"  # The Assistant ID for your Watson Assistant
+WATSON_ASSISTANT_API_KEY = os.getenv"wastsonx_api"
+WATSON_ASSISTANT_URL = os.getenv"watsonx_url"
+WATSON_ASSISTANT_ID = os.getenv"watsonx_id"  # The Assistant ID for your Watson Assistant
 
 def generate_instructions(country, tax_form, transcripts):
     """
