@@ -1,5 +1,5 @@
 import requests
-
+import os
 WATSON_ASSISTANT_API_KEY = os.getenv"wastsonx_api"
 WATSON_ASSISTANT_URL = os.getenv"watsonx_url"
 WATSON_ASSISTANT_ID = os.getenv"watsonx_id"  # The Assistant ID for your Watson Assistant
