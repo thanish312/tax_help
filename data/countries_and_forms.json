@@ -1,0 +1,5 @@
+{
+    "United States": ["Form 1040", "Form W-2"],
+    "India": ["ITR-1", "ITR-2"],
+    "Canada": ["T1 General", "T4 Statement"]
+}
